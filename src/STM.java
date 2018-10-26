@@ -17,6 +17,7 @@ public class STM {
 
     boolean commit(){
         return true;
+
     }
 
 }
