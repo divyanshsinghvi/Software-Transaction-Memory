@@ -1,7 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class Transaction {
+public class Transaction implements Runnable{
     int transactionId;
     int readStamp,writeStamp;
     HashMap<TVar,TVar> readMap, writeMap;
@@ -37,14 +37,17 @@ public class Transaction {
     }
 
     public void commit(){
-        for(Map.Entry<TVar,TVar> entry:writeMap) {
-            entry.getKey().lock = 1;
+        for(Map.Entry<TVar,TVar> entry: writeMap.entrySet())
+        {
+            entry.getKey().lock = transactionId;
         }
+
         globalClock.incGlobalCount();
         writeStamp = globalClock.getGlobalCount();
-        for(i in readSet)
+
+        for(Map.Entry<TVar,TVar> entry: readMap.entrySet())
         {
-            if(map[i].lock != currentTransaction || map[i].stamp > readStamp)
+            if(entry.getKey().lock != transactionId || entry.getKey().stamp > readStamp)
             {
                 Abort();
             }
