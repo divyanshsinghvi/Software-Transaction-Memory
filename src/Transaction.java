@@ -53,6 +53,12 @@ public class Transaction {
                 return Abort();
             }
         }
+        for(Map.Entry<Tvar,Tvar> entry: writeMap.entrySet())
+        {
+            entry.getKey() = entry.getValue();
+            entry.getKey().stamp = writeStamp;
+            entry.getKey().lock = 0;
+        }
         return true;
 
     }
