@@ -1,8 +1,21 @@
+import java.util.HashMap;
 import java.util.List;
 
-public class TVar {
+public class TVar<T> {
+    Object value;
     int stamp;
-    List<T> version;
+    int version;
     int lock;
 
+    TVar(){
+
+    }
+
+    TVar(TVar x){
+        this.value = x.value;
+        this.stamp = x.stamp;
+        this.version = x.version;
+        this.lock = x.lock;
+
+    }
 }
