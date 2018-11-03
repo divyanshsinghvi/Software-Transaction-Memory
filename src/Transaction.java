@@ -1,7 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class Transaction implements Runnable{
+public class Transaction {
     int transactionId;
     int readStamp,writeStamp;
     HashMap<TVar,TVar> readMap, writeMap;
@@ -10,13 +10,13 @@ public class Transaction implements Runnable{
     Transaction(){
         readMap = new HashMap();
         writeMap = new HashMap();
-        transactionId = getId();
+       // transactionId = getId();
         readStamp =  globalClock.getGlobalCount();
     }
 
-    public TVar read(TVar x){
+    public Object read(TVar x){
         if(writeMap.get(x)!=null){ // If local copy exist
-            return writeMap.get(x);
+            return writeMap.get(x).value;
         }
         else if(x.lock == 1 || x.stamp > readStamp ){ //If local copy does not exist check validity
             Abort();
@@ -24,7 +24,9 @@ public class Transaction implements Runnable{
         else{
             TVar z = new TVar(x);
             readMap.put(x,z);
+            return x.value;
         }
+        return x.value;
     }
 
     public void write(TVar x,TVar y){
@@ -36,7 +38,7 @@ public class Transaction implements Runnable{
         }
     }
 
-    public void commit(){
+    public boolean commit(){
         for(Map.Entry<TVar,TVar> entry: writeMap.entrySet())
         {
             entry.getKey().lock = transactionId;
@@ -49,12 +51,15 @@ public class Transaction implements Runnable{
         {
             if(entry.getKey().lock != transactionId || entry.getKey().stamp > readStamp)
             {
-                Abort();
+                return Abort();
             }
         }
+        return true;
 
         //Two points
     }
-
+    public boolean Abort(){
+        return false;
+    }
 
 }
