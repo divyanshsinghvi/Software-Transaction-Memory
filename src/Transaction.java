@@ -2,7 +2,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Transaction {
-    int transactionId=1;
+    static TransactionID tid = new TransactionID();
+    int transactionId;
     int readStamp,writeStamp;
     HashMap<TVar,TVar> readMap, writeMap;
     HashMap<TVar,TVar> globalLocal;
@@ -11,7 +12,11 @@ public class Transaction {
     Transaction(){
         readMap = new HashMap();
         writeMap = new HashMap();
-       // transactionId = getId();
+        globalLocal = new HashMap();
+
+        // transactionId = getId();
+        transactionId = tid.getGlobalCount();
+        tid.incGlobalCount();
         readStamp =  globalClock.getGlobalCount();
     }
 
