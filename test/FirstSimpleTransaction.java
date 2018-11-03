@@ -1,11 +1,36 @@
-public class FirstSimpleTransaction {
-    public static void main(String args[]){
-        Transaction tx  = new Transaction();
-        TVar<Integer> a = new TVar<>();
-        a.value = 3;
-        do {
-            a.value= (int)a.value + 1;
-        }while (!tx.commit());
+class MyThread extends Thread {
+    TVar<Integer> a;
+    public MyThread (TVar<Integer> a) {
+        this.a = a;
     }
 
+    public void run() {
+        Transaction tx  = new Transaction();
+        //TVar<Integer> a = new TVar<>();
+        //a.value = 3;
+        do {
+            int temp = (int)tx.read(a) + 1;
+            TVar<Integer> z= new TVar<>(a);
+            z.value=temp;
+            tx.write(a,z);
+            System.out.println(a.value);
+        }while (!tx.commit());
+    }
 }
+
+public class FirstSimpleTransaction {
+
+    public void transaction(){
+    }
+
+    public static void main(String args[]){
+        TVar<Integer> a = new TVar<>();
+        a.value=3;
+        for(int i=0;i<20;i++){
+            MyThread temp = new MyThread(a);
+            temp.start();
+       }
+
+    }
+}
+

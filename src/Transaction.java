@@ -24,7 +24,6 @@ public class Transaction {
         else{
             TVar z = new TVar(x);
             readMap.put(x,z);
-            return x.value;
         }
         return x.value;
     }
@@ -56,7 +55,6 @@ public class Transaction {
         }
         return true;
 
-        //Two points
     }
     public boolean Abort(){
         return false;
