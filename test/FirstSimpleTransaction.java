@@ -13,9 +13,10 @@ class MyThread extends Thread {
             TVar<Integer> z= new TVar<>(a);
             z.value=temp;
             tx.write(a,z);
-            System.out.println(a.value);
+            System.out.println(a.value+" "+a.stamp);
         }while (!tx.commit());
         System.out.println(a.value);
+
     }
 }
 
@@ -27,7 +28,7 @@ public class FirstSimpleTransaction {
     public static void main(String args[]){
         TVar<Integer> a = new TVar<>();
         a.value=3;
-        for(int i=0;i<2;i++){
+        for(int i=0;i<3;i++){
             MyThread temp = new MyThread(a);
             temp.start();
        }

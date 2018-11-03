@@ -63,9 +63,11 @@ public class Transaction {
 
         globalClock.incGlobalCount();
         writeStamp = globalClock.getGlobalCount();
-
+        int i=0;
         for(Map.Entry<TVar,TVar> entry: readMap.entrySet())
         {
+            System.out.println("Lock and transactional Id "+transactionId+" "+entry.getKey().lock+" "+i++ );
+
             if(entry.getKey().lock != transactionId || entry.getKey().stamp > readStamp)
             {
                 for(Map.Entry<TVar,TVar> entry1: writeMap.entrySet())
@@ -83,6 +85,7 @@ public class Transaction {
         {
             entry.getKey().value = entry.getValue().value;
             entry.getKey().stamp = writeStamp;
+            System.out.println("BOOM");
             entry.getKey().lock = 0;
         }
         return true;

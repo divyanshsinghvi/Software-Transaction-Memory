@@ -8,7 +8,7 @@ public class TransactionID {
     Lock writeLock = lock.writeLock();
     Lock readLock = lock.readLock();
     TransactionID(){
-        count = 0;
+        count = 1;
     }
 
     public int getGlobalCount(){
