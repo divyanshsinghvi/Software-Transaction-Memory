@@ -3,11 +3,12 @@ import java.util.HashSet;
 public class Transaction {
     int readStamp,writeStamp;
     HashSet<> readSet, writeSet;
+    static Clock globalClock = new Clock();
 
     Transaction(){
         readSet = new HashSet();
         writeSet = new HashSet();
-        readStamp =  getGlobalCount();
+        readStamp =  globalClock.getGlobalCount();
     }
 
     public void read(TVar x){
@@ -36,8 +37,8 @@ public class Transaction {
         {
             i.lock;
         }
-        incGlobalClock();
-        writeStamp = getGlobalCount();
+        globalClock.incGlobalCount();
+        writeStamp = globalClock.getGlobalCount();
         for(i in readSet)
         {
             if(map[i].lock != currentTransaction || map[i].stamp > readStamp)
