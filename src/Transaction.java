@@ -5,12 +5,13 @@ public class Transaction {
     int transactionId;
     int readStamp,writeStamp;
     HashMap<TVar,TVar> readMap, writeMap;
+    static Clock globalClock = new Clock();
 
     Transaction(){
         readMap = new HashMap();
         writeMap = new HashMap();
-        readStamp =  getGlobalCount();
         transactionId = getId();
+        readStamp =  globalClock.getGlobalCount();
     }
 
     public TVar read(TVar x){
@@ -39,9 +40,9 @@ public class Transaction {
         for(Map.Entry<TVar,TVar> entry:writeMap) {
             entry.getKey().lock = 1;
         }
-        incGlobalClock();
-        writeStamp = getGlobalCount();
-        for()
+        globalClock.incGlobalCount();
+        writeStamp = globalClock.getGlobalCount();
+        for(i in readSet)
         {
             if(map[i].lock != currentTransaction || map[i].stamp > readStamp)
             {
