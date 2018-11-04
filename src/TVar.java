@@ -9,7 +9,7 @@ public class TVar<T> {
     int lock;
 
     TVar(){
-
+        stamp = 0;
     }
 
     TVar(TVar x){
