@@ -80,14 +80,16 @@ public class Transaction {
                 //return Abort();
             }
         }
+        for(Map.Entry<TVar,TVar> entry: writeMap.entrySet()) {
+            entry.getKey().value = entry.getValue().value;
+        }
+
         for(Map.Entry<TVar,TVar> entry: writeMap.entrySet())
         {
-            entry.getKey().value = entry.getValue().value;
             entry.getKey().stamp = writeStamp;
-           // System.out.println("BOOM");
-            entry.getKey().lock = 0;
+             entry.getKey().lock = 0;
         }
-        return true;
+            return true;
 
     }
     public boolean Abort(){
