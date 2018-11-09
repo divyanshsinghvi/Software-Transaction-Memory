@@ -1,6 +1,6 @@
 public class STMArray<T> {
-    private int length;
-    private TVar array[];
+    public int length;
+    public TVar array[];
     public STMArray(int length){
         this.length = length;
         array = new TVar[length];
@@ -16,8 +16,7 @@ public class STMArray<T> {
     }
 
     public T getItem(int i,Transaction tx){
-        Object val = tx.read(array[i]);
-        return (T)val;
+        return (T)tx.read(array[i]);
     }
 
 }

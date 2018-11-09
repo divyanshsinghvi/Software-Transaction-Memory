@@ -20,13 +20,14 @@ class TestThread extends Thread {
             Transaction tx = new Transaction();
             if(initializeValue == -1) {
                 myFinalValue = a.getItem(4, tx);
-                a.addItem(myFinalValue + 1, 4, tx);
+                myFinalValue +=1;
+                a.addItem(myFinalValue , 4, tx);
             }else{
                 a.addItem(initializeValue,index,tx);
             }
                 condition = tx.commit();
         }while(!condition);
-        System.out.println(myFinalValue);
+        System.out.println(a.array[4].value);
     }
 
 }
@@ -41,11 +42,21 @@ public class TestArray {
         for(int i=0;i<10;i++) {
             TestThread test = new TestThread(testArray,0,i);
             test.start();
+try{
+    test.join();}
+    catch (Exception e){
+        System.out.println(e);
+    }
         }
 
         for(int i=0;i<20;i++){
             TestThread temp = new TestThread(testArray, -1);
             temp.start();
+            try{
+                temp.join();}
+            catch (Exception e){
+                System.out.println(e);
+            }
         }
 
 

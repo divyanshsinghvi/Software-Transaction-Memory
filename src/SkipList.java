@@ -107,44 +107,22 @@ public class SkipList<T> {
                 hz.value = height.value + 1;
 
                 tx.write(height, hz);
-                TVar<STMSkipNode<T>> z1 = new TVar<>();
-                TVar<STMSkipNode<T>> z2 = new TVar<>();
                 p1 = new STMSkipNode(STMSkipNode.negInf,null);
                 p2 = new STMSkipNode(STMSkipNode.posInf,null);
                 p1.right.value = p2;
-                p1.down.value  = z1;
+                p1.down.value  = tx.read(head);
                 p2.left.value = p1;
-                p2.down.value = z2;
+                p2.down.value = tx.read(tail);
 
-
-                z1.value = new STMSkipNode<T>(((String) ((STMSkipNode) tx.read(head)).key.value), ((T) ((STMSkipNode) tx.read(head)).getValue(tx)));
-                z1.value.left = ((STMSkipNode) tx.read(head)).left;
-                z1.value.down = ((STMSkipNode) tx.sCopy(head).value).down;
-                z1.value.up = ((STMSkipNode) tx.read(head)).up;
-                z1.value.right = ((STMSkipNode) tx.read(head)).right;
-                z1.stamp = tx.sCopy(head).stamp;
-                z1.lock = tx.sCopy(head).lock;
-
-                tx.write(((STMSkipNode) tx.read(((STMSkipNode) tx.read(head)).down)).up,z1);
-
-                TVar<STMSkipNode<T>> x1 = new TVar<>();
-                x1.value = p1;
-                tx.write(head,x1);
-
+                TVar<STMSkipNode<T>> z1 = new TVar<>();
+                z1.value = p1;
+                head.value.up = z1;
+                TVar<STMSkipNode<T>> z2 = new TVar<>();
                 z2.value = p2;
+                tail.value.up = z2;
 
-
-                z2.value = new STMSkipNode<T>(((String) ((STMSkipNode) tx.read(tail)).key.value), ((T) ((STMSkipNode) tx.read(tail)).getValue(tx)));
-                z2.value.left = ((STMSkipNode) tx.read(tail)).left;
-                z2.value.down = ((STMSkipNode) tx.sCopy(tail).value).down;
-                z2.value.up = ((STMSkipNode) tx.read(tail)).up;
-                z2.value.right = ((STMSkipNode) tx.read(tail)).right;
-                z2.stamp = tx.sCopy(tail).stamp;
-                z2.lock = tx.sCopy(tail).lock;
-                TVar<STMSkipNode<T>> x2 = new TVar<>();
-                x2.value = p2;
-                tx.write(tail, x2);
-
+                head=z1;
+                tail=z2;
             }
 
 
