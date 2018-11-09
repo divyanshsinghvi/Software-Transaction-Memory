@@ -3,7 +3,7 @@ import java.util.List;
 
 
 public class TVar<T> {
-    Object value;
+    T value;
     int stamp;
     int version;
     int lock;
@@ -13,7 +13,7 @@ public class TVar<T> {
     }
 
     TVar(TVar x){
-        this.value = x.value;
+        this.value = (T)x.value;
         this.stamp = x.stamp;
         this.version = x.version;
         this.lock = x.lock;

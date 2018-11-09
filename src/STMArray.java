@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class STMArray<T> {
     private int length;
     private TVar array[];

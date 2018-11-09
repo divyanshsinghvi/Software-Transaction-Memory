@@ -19,7 +19,7 @@ class MyThread extends Thread {
            // System.out.println(a.value);
 
         }while (!condition);
-       // System.out.println(a.value);
+        System.out.println(a.value);
 
     }
 }
