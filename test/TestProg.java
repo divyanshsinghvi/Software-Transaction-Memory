@@ -29,6 +29,7 @@ public class TestProg
 //        System.out.println("------");
 //    S.printVertical();
 //    System.out.println("======");
+        System.out.println("AAAA");
 
         S.put("DEF", 123,tx);
 //        S.printHorizontal();
@@ -36,11 +37,13 @@ public class TestProg
 //    S.printVertical();
 //    System.out.println("======");
 
+        System.out.println("AAAA");
         S.put("KLM", 123,tx);
 //        S.printHorizontal();
 //        System.out.println("------");
 //    S.printVertical();
 //    System.out.println("======");
+        System.out.println("AAAA");
 
         S.put("HIJ", 123,tx);
 //        S.printHorizontal();

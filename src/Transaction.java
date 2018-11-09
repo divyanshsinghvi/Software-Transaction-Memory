@@ -34,6 +34,20 @@ public class Transaction {
         return x.value;
     }
 
+    public TVar sCopy(TVar x){
+        if(writeMap.get(x)!=null){ // If local copy exist
+            return writeMap.get(x);
+        }
+        else if(x.lock != 0 || x.stamp > readStamp ){ //If local copy does not exist check validity
+            Abort();
+        }
+        else{
+            TVar z = new TVar(x);
+            readMap.put(x,z);
+        }
+        return x;
+    }
+
     public void write(TVar x,TVar y){
 //        if (writeMap.get(x)!=null){
             writeMap.put(x,y);
