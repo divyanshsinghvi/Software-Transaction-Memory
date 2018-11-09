@@ -9,6 +9,7 @@ public class TVar<T> {
     int lock;
 
     TVar(){
+        value = null;
         stamp = 0;
     }
 

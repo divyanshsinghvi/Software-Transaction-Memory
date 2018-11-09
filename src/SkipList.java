@@ -1,7 +1,7 @@
 import java.util.Iterator;
 import java.util.Random;
 
-public class SkipList<T>  {
+public class SkipList<T> {
     TVar<STMSkipNode<T>> head, tail;
     TVar<Integer> height;
     TVar<Integer> nodesNo;
@@ -28,16 +28,15 @@ public class SkipList<T>  {
     }
 
     public STMSkipNode findEntry(String k, Transaction tx) {
-        TVar<STMSkipNode<T>> p = new TVar<>();
-        p.value = (STMSkipNode<T>) tx.read(head);
+        tx.read(head);
+        TVar<STMSkipNode<T>> p = head;
         while (true) {
 //           Search RIGHT until you find a LARGER entry
-
-            while (p.value.right.value.key.value != STMSkipNode.posInf && p.value.right.value.key.value.compareTo(k) <= 0) {
+            while (((STMSkipNode) tx.read(p.value.right)).key.value != STMSkipNode.posInf && ((String) ((STMSkipNode) tx.read(p.value.right)).key.value).compareTo(k) <= 0) {
                 p = p.value.right;         // Move to right
             }
 
-            if (p.value.down != null) {
+            if (tx.read(p.value.down) != null) {
                 p = p.value.down;          // Go downwards
             } else {
                 break;       // We reached the LOWEST level... Exit...
@@ -45,112 +44,120 @@ public class SkipList<T>  {
         }
         return (p.value);         // Note: p.key <= k
     }
-}
 
-//    public Object get (String k)
-//    {
-//        STMSkipNode p;
-//        p = findEntry(k);
-//        if ( k.equals( p.getKey() ) )
-//            return(p.value);
-//        else
-//            return(null);
-//    }
-//
-//
-//    public T put (String k, T v)
-//    {
-//        STMSkipNode p, q;
-//        int i;
-//        p = findEntry(k);
-//
-//        if ( k.equals( p.getKey() ) )
-//        {
-//            T old = (T) p.value;
-//            p.value = v;
-//            return(old);
-//        }
-//
-//        q = new STMSkipNode(k, v);
-//        q.left = p;
-//        q.right = p.right;
-//        p.right.left = q;
-//        p.right = q;
-//        i = 0;                   // Current level = 0
-//        while ( r.nextDouble() < 0.5 )
-//        {
-//
-//            if ( i >= height )
-//            {
-//                STMSkipNode p1, p2;
-//                height = height + 1;
-//                p1 = new STMSkipNode(STMSkipNode.negInf,null);
-//                p2 = new STMSkipNode(STMSkipNode.posInf,null);
-//                p1.right = p2;
-//                p1.down  = head;
-//                p2.left = p1;
-//                p2.down = tail;
-//
-//                head.up = p1;
-//                tail.up = p2;
-//
-//                head = p1;
-//                tail = p2;
-//            }
-//
-//
-//            while ( p.up == null )
-//            {
-//                p = p.left;
-//            }
-//            p = p.up;
-//
-//            STMSkipNode e;
-//
-//            e = new STMSkipNode(k, null);  // Don't need the value...
-//
-//   	/* ---------------------------------------
-//   	   Initialize links of e
-//   	   --------------------------------------- */
-//            e.left = p;
-//            e.right = p.right;
-//            e.down = q;
-//
-//   	/* ---------------------------------------
-//   	   Change the neighboring links..
-//   	   --------------------------------------- */
-//            p.right.left = e;
-//            p.right = e;
-//            q.up = e;
-//
-//            q = e;		// Set q up for the next iteration
-//
-//            i = i + 1;	// Current level increased by 1
-//
-//        }
-//
-//        nodesNo = nodesNo + 1;
-//
-//        return(null);   // No old value
-//    }
-//
-//    public void delete(String key){
-//        STMSkipNode p = findEntry(key);
-//
-//        if (p.key != key)
-//            return;     // Not found, don't remove
-//
-//   /* ------------------------------------------------------------
-//      We are at level 0
-//      Travel up the tower and link the left and right neighbors
-//      ------------------------------------------------------------ */
-//        while ( p != null )
-//        {
-//            p.left.right = p.right;
-//            p.right.left = p.left;
-//            p = p.up;
-//        }
-//    }
+    public Object get(String k,Transaction tx) {
+        TVar<STMSkipNode<T>> p = new TVar<>();
+        p.value = findEntry(k,tx);
+        if (k.equals(p.value.getKey(tx)))
+            return (p.value);
+        else
+            return (null);
+    }
+
+    public T put (String k, T v,Transaction tx)
+    {
+        TVar<STMSkipNode<T>> p = new TVar<>();
+        TVar<STMSkipNode<T>> q = new TVar<>();
+        int i;
+        p.value = findEntry(k,tx);
+
+        if ( k.equals( p.value.getKey(tx) ) )
+        {
+            T old = (T) p.value;
+            TVar<T> V = new TVar<>();
+            V.value = v;
+            tx.write(p,V);
+            return(old);
+        }
+
+        q.value = new STMSkipNode(k, v);
+        tx.write(q.value.left,p);
+        tx.write(q.value.right, ((STMSkipNode) tx.read(p)).right);
+        tx.write(((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).left,q);
+        tx.write(((STMSkipNode) tx.read(p)).right,q);
+        i = 0;                   // Current level = 0
+        while ( r.nextDouble() < 0.5 )
+        {
+
+            if ( i >= ((Integer) tx.read(height)))
+            {
+                STMSkipNode p1, p2;
+                TVar<Integer> hz = new TVar<>();
+                hz.value = height.value + 1;
+
+                tx.write(height, hz);
+                p1 = new STMSkipNode(STMSkipNode.negInf,null);
+                p2 = new STMSkipNode(STMSkipNode.posInf,null);
+                p1.right.value = p2;
+                p1.down.value  = tx.read(head);
+                p2.left.value = p1;
+                p2.down.value = tx.read(tail);
+
+                TVar<STMSkipNode<T>> z1 = new TVar<>();
+                z1.value = p1;
+                tx.write(head.value.up,z1);
+                TVar<STMSkipNode<T>> z2 = new TVar<>();
+                z2.value = p2;
+                tx.write(tail.value.up, z2);
+
+                tx.write(head,z1);
+                tail = p2;
+            }
+
+
+            while ( p.up == null )
+            {
+                p = p.left;
+            }
+            p = p.up;
+
+            STMSkipNode e;
+
+            e = new STMSkipNode(k, null);  // Don't need the value...
+
+   	/* ---------------------------------------
+   	   Initialize links of e
+   	   --------------------------------------- */
+            e.left = p;
+            e.right = p.right;
+            e.down = q;
+
+   	/* ---------------------------------------
+   	   Change the neighboring links..
+   	   --------------------------------------- */
+            p.right.left = e;
+            p.right = e;
+            q.up = e;
+
+            q = e;		// Set q up for the next iteration
+
+            i = i + 1;	// Current level increased by 1
+
+        }
+
+        nodesNo = nodesNo + 1;
+
+        return(null);   // No old value
+    }
+
+    public void delete(String key){
+        STMSkipNode p = findEntry(key);
+
+        if (p.key != key)
+            return;     // Not found, don't remove
+
+   /* ------------------------------------------------------------
+      We are at level 0
+      Travel up the tower and link the left and right neighbors
+      ------------------------------------------------------------ */
+        while ( p != null )
+        {
+            p.left.right = p.right;
+            p.right.left = p.left;
+            p = p.up;
+        }
+    }
+}
 //
 //    public void printList(){
 //
