@@ -101,15 +101,15 @@ public class SkipList<T> {
                 tx.write(tail.value.up, z2);
 
                 tx.write(head,z1);
-                tail = p2;
+                tx.write(tail,z2);
             }
 
 
-            while ( p.up == null )
+            while ( tx.read(((STMSkipNode) tx.read(p)).up )== null )
             {
-                p = p.left;
+                tx.write(p,p.value.left);
             }
-            p = p.up;
+            tx.write(p,p.value.up);
 
             STMSkipNode e;
 
@@ -118,30 +118,34 @@ public class SkipList<T> {
    	/* ---------------------------------------
    	   Initialize links of e
    	   --------------------------------------- */
-            e.left = p;
-            e.right = p.right;
-            e.down = q;
+            e.left.value = tx.read(p);
+            e.right.value = tx.read(((STMSkipNode) tx.read(p)).right);
+            e.down.value = tx.read(q);
 
    	/* ---------------------------------------
    	   Change the neighboring links..
    	   --------------------------------------- */
-            p.right.left = e;
-            p.right = e;
-            q.up = e;
+   	        TVar<STMSkipNode<T>> E = new TVar<>();
+   	        E.value = e;
+            tx.write(((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).left,E);
+            tx.write(((STMSkipNode) tx.read(p)).right,E);
+            tx.write(((STMSkipNode) tx.read(q)).up, E);
 
-            q = e;		// Set q up for the next iteration
+            tx.write(q,E);		// Set q up for the next iteration
 
             i = i + 1;	// Current level increased by 1
 
         }
 
-        nodesNo = nodesNo + 1;
+        TVar<Integer>z = new TVar<>(nodesNo);
+        z.value = z.value + 1;
+        tx.write(nodesNo ,z);
 
         return(null);   // No old value
     }
 
-    public void delete(String key){
-        STMSkipNode p = findEntry(key);
+    public void delete(String key,Transaction tx){
+        STMSkipNode p = findEntry(key,tx);
 
         if (p.key != key)
             return;     // Not found, don't remove
