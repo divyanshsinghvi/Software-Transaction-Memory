@@ -23,6 +23,12 @@ public final class STMSkipNode<T>   {
         down=  new TVar<>();
         left= new TVar<>();
         right = new TVar<>();
+
+//        up.value = new STMSkipNode<>(null, null);
+//        down.value = new STMSkipNode<>(null,null);
+//        right.value =new STMSkipNode<>(null,null);
+//        left.value = new STMSkipNode<>(null,null);
+
     }
 
     public T getValue(Transaction tx)

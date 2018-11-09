@@ -146,104 +146,93 @@ public class SkipList<T> {
 
     public void delete(String key,Transaction tx){
         STMSkipNode p = findEntry(key,tx);
-
-        if (p.key != key)
+        if (p.key.value != key)
             return;     // Not found, don't remove
 
-   /* ------------------------------------------------------------
-      We are at level 0
-      Travel up the tower and link the left and right neighbors
-      ------------------------------------------------------------ */
         while ( p != null )
         {
-            p.left.right = p.right;
-            p.right.left = p.left;
-            p = p.up;
+            tx.write(((STMSkipNode) tx.read(p.left)).right , p.right);
+            tx.write(((STMSkipNode) tx.read(p.right)).left,p.left);
+            p = ((STMSkipNode) p.up.value);
         }
     }
+
+
+    public void printList(){
+
+    }
+
+    public void printHorizontal()
+    {
+        String s = "";
+        int i;
+
+        STMSkipNode p;
+
+     /* ----------------------------------
+	Record the position of each entry
+	---------------------------------- */
+        p = head.value;
+
+        while ( p.down != null )
+        {
+            p = ((STMSkipNode) p.down.value);
+        }
+
+        i = 0;
+        while ( p != null )
+        {
+            p.pos.value = i++;
+            p = ((STMSkipNode) p.right.value);
+        }
+
+     /* -------------------
+	Print...
+	------------------- */
+        p = head.value;
+
+        while ( p != null )
+        {
+            s = getOneRow( p );
+            System.out.println(s);
+
+            p = ((STMSkipNode) p.down.value);
+        }
+    }
+
+    public String getOneRow( STMSkipNode p )
+    {
+        String s;
+        int a, b, i;
+
+        a = 0;
+
+        s = "" + p.key.value;
+        p = ((STMSkipNode) p.right.value);
+
+
+        while ( p != null )
+        {
+            STMSkipNode q;
+
+            q = p;
+            while (q.down != null)
+                q = ((STMSkipNode) q.down.value);
+            b = ((Integer) q.pos.value);
+            s = s + " <-";
+
+
+            for (i = a+1; i < b; i++)
+                s = s + "--------";
+
+            s = s + "> " + p.key.value;
+
+            a = b;
+
+            p = ((STMSkipNode) p.right.value);
+        }
+
+        return(s);
+    }
+
 }
-//
-//    public void printList(){
-//
-//    }
-//
-//    public void printHorizontal()
-//    {
-//        String s = "";
-//        int i;
-//
-//        STMSkipNode p;
-//
-//     /* ----------------------------------
-//	Record the position of each entry
-//	---------------------------------- */
-//        p = head;
-//
-//        while ( p.down != null )
-//        {
-//            p = p.down;
-//        }
-//
-//        i = 0;
-//        while ( p != null )
-//        {
-//            p.pos = i++;
-//            p = p.right;
-//        }
-//
-//     /* -------------------
-//	Print...
-//	------------------- */
-//        p = head;
-//
-//        while ( p != null )
-//        {
-//            s = getOneRow( p );
-//            System.out.println(s);
-//
-//            p = p.down;
-//        }
-//    }
-//
-//    public String getOneRow( STMSkipNode p )
-//    {
-//        String s;
-//        int a, b, i;
-//
-//        a = 0;
-//
-//        s = "" + p.key;
-//        p = p.right;
-//
-//
-//        while ( p != null )
-//        {
-//            STMSkipNode q;
-//
-//            q = p;
-//            while (q.down != null)
-//                q = q.down;
-//            b = q.pos;
-//
-//            s = s + " <-";
-//
-//
-//            for (i = a+1; i < b; i++)
-//                s = s + "--------";
-//
-//            s = s + "> " + p.key;
-//
-//            a = b;
-//
-//            p = p.right;
-//        }
-//
-//        return(s);
-//    }
-//
-//
-//    @Override
-//    public Iterator iterator() {
-//        return null;
-//    }
-//}
