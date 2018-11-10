@@ -3,27 +3,12 @@ import java.util.*;
 
 public class SkipListBasic<T>
 {
-    public SkipListEntry<T> head;    // First element of the top level
-    public SkipListEntry<T> tail;    // Last element of the top level
-
-
-    public int n; 		// number of entries in the Skip list
-
-    public int h;       // Height
-    public Random r;    // Coin toss
-
-    /* ----------------------------------------------
-       Constructor: empty skiplist
-
-                            null        null
-                             ^           ^
-                             |           |
-       head --->  null <-- -inf <----> +inf --> null
-                             |           |
-                             v           v
-                            null        null
-       ---------------------------------------------- */
-    public SkipListBasic()     // Default constructor...
+    public SkipListEntry<T> head;
+    public SkipListEntry<T> tail;
+    public int noEntry;
+    public int h;
+    public Random r;
+    public SkipListBasic()
     {
         SkipListEntry p1, p2;
 
@@ -36,7 +21,7 @@ public class SkipListBasic<T>
         p1.right = p2;
         p2.left = p1;
 
-        n = 0;
+        noEntry = 0;
         h = 0;
 
         r = new Random();
@@ -46,19 +31,15 @@ public class SkipListBasic<T>
     /** Returns the number of entries in the hash table. */
     public int size()
     {
-        return n;
+        return noEntry;
     }
 
     /** Returns whether or not the table is empty. */
     public boolean isEmpty()
     {
-        return (n == 0);
+        return (noEntry == 0);
     }
 
-    /* ------------------------------------------------------
-       findEntry(k): find the largest key x <= k
-             on the LOWEST level of the Skip List
-       ------------------------------------------------------ */
     public boolean isPresent(String k){
         SkipListEntry p = head;
         while ( true )
@@ -84,24 +65,10 @@ public class SkipListBasic<T>
     {
         SkipListEntry p;
 
-     /* -----------------
-	Start at "head"
-	----------------- */
         p = head;
 
         while ( true )
         {
-        /* --------------------------------------------
-	   Search RIGHT until you find a LARGER entry
-
-           E.g.: k = 34
-
-                     10 ---> 20 ---> 30 ---> 40
-                                      ^
-                                      |
-                                      p stops here
-		p.right.key = 40
-	   -------------------------------------------- */
             while ( p.right.key != SkipListEntry.posInf &&
                     p.right.key.compareTo(k) <= 0 )
             {
@@ -109,19 +76,16 @@ public class SkipListBasic<T>
 //         System.out.println(">>>> " + p.key);
             }
 
-	/* ---------------------------------
-	   Go down one level if you can...
-	   --------------------------------- */
             if ( p.down != null )
             {
                 p = p.down;
 //         System.out.println("vvvv " + p.key);
             }
             else
-                break;	// We reached the LOWEST level... Exit...
+                break;
         }
 
-        return(p);         // p.key <= k
+        return(p);
     }
 
 
@@ -184,113 +148,58 @@ public class SkipListBasic<T>
         int       i;
 
         p = findEntry(k);
-
-//   System.out.println("findEntry(" + k + ") returns: " + p.key);
-     /* ------------------------
-	Check if key is found
-	------------------------ */
         if ( k.equals( p.getKey() ) )
         {
             T old = (T)p.value;
-
             p.value = v;
-
             return (old);
         }
 
-     /* ------------------------
-	Insert new entry (k,v)
-	------------------------ */
-
-     /* ------------------------------------------------------
-        **** BUG: He forgot to insert in the lowest level !!!
-	Link at the lowest level
-	------------------------------------------------------ */
         q = new SkipListEntry(k, v);
         q.left = p;
         q.right = p.right;
         p.right.left = q;
         p.right = q;
 
-        i = 0;                   // Current level = 0
-
+        i = 0;
         while ( r.nextDouble() < 0.5 )
         {
-            // Coin flip success: make one more level....
-
-//	System.out.println("i = " + i + ", h = " + h );
-
-	/* ---------------------------------------------
-	   Check if height exceed current height.
- 	   If so, make a new EMPTY level
-	   --------------------------------------------- */
             if ( i >= h )
             {
                 SkipListEntry p1, p2;
-
                 h = h + 1;
-
                 p1 = new SkipListEntry(SkipListEntry.negInf,null);
                 p2 = new SkipListEntry(SkipListEntry.posInf,null);
-
                 p1.right = p2;
                 p1.down  = head;
-
                 p2.left = p1;
                 p2.down = tail;
-
                 head.up = p1;
                 tail.up = p2;
-
                 head = p1;
                 tail = p2;
             }
 
-
-	/* -------------------------
-	   Scan backwards...
-	   ------------------------- */
             while ( p.up == null )
             {
 //	   System.out.print(".");
                 p = p.left;
             }
-
 //	System.out.print("1 ");
-
             p = p.up;
-
-
-	/* ---------------------------------------------
-           Add one more (k,v) to the column
-	   --------------------------------------------- */
             SkipListEntry e;
-
-            e = new SkipListEntry(k, null);  // Don't need the value...
-   		 
-   	/* ---------------------------------------
-   	   Initialize links of e
-   	   --------------------------------------- */
+            e = new SkipListEntry(k, null);
             e.left = p;
             e.right = p.right;
             e.down = q;
-   		 
-   	/* ---------------------------------------
-   	   Change the neighboring links..
-   	   --------------------------------------- */
             p.right.left = e;
             p.right = e;
             q.up = e;
-
-            q = e;		// Set q up for the next iteration
-
-            i = i + 1;	// Current level increased by 1
-
+            q = e;
+            i = i + 1;
         }
-
-        n = n + 1;
-
-        return(null);   // No old value
+        noEntry = noEntry + 1;
+        return(null);
     }
 
     /** Removes the key-value pair with a specified key. */
@@ -299,20 +208,14 @@ public class SkipListBasic<T>
         SkipListEntry p = findEntry(key);
 
         if (!p.key.equals(key))
-            return(null);     // Not found, don't remove
+            return(null);
 
-   /* ------------------------------------------------------------
-      We are at level 0
-      Travel up the tower and link the left and right neighbors
-      ------------------------------------------------------------ */
         while ( p != null )
         {
             p.left.right = p.right;
             p.right.left = p.left;
             p = p.up;
         }
-
-
         return(null);
     }
 
@@ -320,36 +223,23 @@ public class SkipListBasic<T>
     {
         String s = "";
         int i;
-
         SkipListEntry p;
-
-     /* ----------------------------------
-	Record the position of each entry
-	---------------------------------- */
         p = head;
-
         while ( p.down != null )
         {
             p = p.down;
         }
-
         i = 0;
         while ( p != null )
         {
             p.pos = i++;
             p = p.right;
         }
-
-     /* -------------------
-	Print...
-	------------------- */
         p = head;
-
         while ( p != null )
         {
             s = getOneRow( p );
             System.out.println(s);
-
             p = p.down;
         }
     }
@@ -358,57 +248,41 @@ public class SkipListBasic<T>
     {
         String s;
         int a, b, i;
-
         a = 0;
-
         s = "" + p.key;
         p = p.right;
-
 
         while ( p != null )
         {
             SkipListEntry q;
-
             q = p;
             while (q.down != null)
                 q = q.down;
             b = q.pos;
-
             s = s + " <-";
-
-
             for (i = a+1; i < b; i++)
                 s = s + "--------";
-
             if(p.value == null)
                 s = s + "> " + p.key;
             else
                 s = s + "> " + p.key + " "+((TVar<Integer>)p.value).value;
-
             a = b;
-
             p = p.right;
         }
-
         return(s);
     }
 
     public void printVertical()
     {
         String s = "";
-
         SkipListEntry p;
-
         p = head;
-
         while ( p.down != null )
             p = p.down;
-
         while ( p != null )
         {
             s = getOneColumn( p );
             System.out.println(s);
-
             p = p.right;
         }
     }
@@ -417,14 +291,11 @@ public class SkipListBasic<T>
     public String getOneColumn( SkipListEntry p )
     {
         String s = "";
-
         while ( p != null )
         {
             s = s + " " + p.key;
-
             p = p.up;
         }
-
         return(s);
     }
 
