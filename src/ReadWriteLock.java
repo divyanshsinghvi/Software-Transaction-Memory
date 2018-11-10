@@ -41,19 +41,17 @@ public class ReadWriteLock {
     }
 
         public synchronized void lockRead(int id) throws InterruptedException{
-            lockWrite(id);
-            //            while(writers > 0 || writeRequests > 0){
-//                wait();
-//            }
-//            Readers.add(id);
-//            readers++;
+            while(writers > 0 || writeRequests > 0){
+                wait();
+            }
+            Readers.add(id);
+            readers++;
         }
 
         public synchronized void unlockRead(int id) throws InterruptedException {
-                unlockWrite(id);
-            //            Readers.remove(id);
-//            readers--;
-//            notifyAll();
+            Readers.remove(id);
+            readers--;
+            notifyAll();
         }
 
         public synchronized void lockWrite(int id) throws InterruptedException{

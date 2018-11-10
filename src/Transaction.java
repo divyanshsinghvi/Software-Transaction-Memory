@@ -69,6 +69,17 @@ public class Transaction {
             writeMap.put(x,y);
     }
 
+    public boolean retry(){
+
+        while (true) {
+            for (Map.Entry<TVar, TVar> entry : readMap.entrySet()) {
+                if (entry.getKey().stamp.intValue() > readStamp) {
+                    return false;
+                }
+            }
+        }
+    }
+
     public boolean commit(){
         for(Map.Entry<TVar,TVar> entry: writeMap.entrySet())
         {

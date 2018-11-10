@@ -23,13 +23,14 @@ class MyQueue extends Thread {
         boolean condition=false;
         do {
             Transaction tx = new Transaction();
-                Object d = tx.read(q1);
-                if (d instanceof Integer)
-                    continue;
-            Queue<Integer> temp = (Queue<Integer>)d;// tx.read(q1);
+//                Object d = tx.read(q1);
+//                if (d instanceof Integer)
+//                    continue;
+//
+//            Queue<Integer> temp = (Queue<Integer>)d;// tx.read(q1);
             int head;
             try {
-                head = temp.remove();
+                head = q1.remove();
             }catch (Exception e)
             {
                 System.out.println(e.getMessage());
