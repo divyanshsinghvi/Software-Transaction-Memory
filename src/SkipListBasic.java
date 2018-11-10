@@ -178,7 +178,7 @@ public class SkipListBasic<T>
     }
 
     /** Put a key-value pair in the map, replacing previous one if it exists. */
-    public T put (String k, T v)
+    public synchronized T put (String k, T v)
     {
         SkipListEntry p, q;
         int       i;

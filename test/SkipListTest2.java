@@ -34,7 +34,7 @@ public class SkipListTest2 {
         }while(!condition);
         System.out.println("--------------");
         //Map Initialized
-        int n =10;
+        int n =500;
         SkipThread2[] threads = new SkipThread2[n];
         for(int i=0;i<n;i++){
             threads[i] = new SkipThread2(skipList,i);
