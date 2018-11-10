@@ -1,14 +1,8 @@
 class TestThread extends Thread {
     STMArray<Integer> a;
-    int initializeValue = 0;
     int myFinalValue;
-    int index =0;
 
-    public TestThread (STMArray<Integer> a,int initializeValue) {
-        this.a = a;
-        this.initializeValue = initializeValue;
-
-    }
+    
     public TestThread (STMArray<Integer> a) {
         this.a = a;
     }
