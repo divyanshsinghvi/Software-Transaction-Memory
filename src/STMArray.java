@@ -1,6 +1,10 @@
 public class STMArray<T> {
+    /*
+    * Array Implementation
+    * */
     public int length;
     public TVar array[];
+
     public STMArray(int length){
         this.length = length;
         array = new TVar[length];

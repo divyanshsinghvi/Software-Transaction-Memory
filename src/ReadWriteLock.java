@@ -3,6 +3,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/*
+*   Reader Writer Lock for 2 Phase Locking
+*/
+
 public class ReadWriteLock {
 
         private int readers       = 0;

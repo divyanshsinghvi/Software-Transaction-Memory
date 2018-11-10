@@ -41,14 +41,13 @@ public final class STMSkipNode<T>   {
         return (String)tx.read(key);
     }
 
-    public T setValue(T valz, Transaction tx)
-    {
+    public T setValue(T valz, Transaction tx) {
         TVar oldValue = new TVar();
-        oldValue.value = (T)tx.read(val);
+        oldValue.value = (T) tx.read(val);
         TVar newValue = new TVar();
         newValue.value = valz;
-        tx.write(val,newValue);
-        return (T)oldValue.value;
+        tx.write(val, newValue);
+        return (T) oldValue.value;
     }
 
 //    public boolean equals(Object o,Transaction tx)

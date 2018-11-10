@@ -11,8 +11,6 @@ class MyThread extends Thread {
             condition = false;
             Transaction tx = new Transaction();
             int tem = (int) tx.read(a);
- //           System.out.println("S"+tem);
-            //System.out.println("GOOGLE");
             if (tem == -1) {
                 continue;
             }
@@ -21,7 +19,6 @@ class MyThread extends Thread {
             z.value=temp;
             tx.write(a,z);
             //System.out.println(a.value);
-            //System.out.println("BOO");
             condition = tx.commit();
         }while (!condition);
         System.out.println(a.value);
@@ -32,7 +29,7 @@ class MyThread extends Thread {
 public class FirstSimpleTransaction {
 
 
-    public static void main(String args[]){
+    public static void main(String args[]) throws InterruptedException {
         TVar<Integer> a = new TVar<>();
         a.value=3;
         int nothread=107;
@@ -44,6 +41,9 @@ public class FirstSimpleTransaction {
         for(int i=0;i<nothread;i++) {
             temp[i].start();
         }
-}
+        Thread.sleep(100);
+        System.out.println(a.value);
+
+    }
     }
 

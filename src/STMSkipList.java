@@ -23,7 +23,6 @@ public class STMSkipList<T> {
 
     public void prinList(){
         skipList.printHorizontal();
-        System.out.println("------");
 
     }
 }

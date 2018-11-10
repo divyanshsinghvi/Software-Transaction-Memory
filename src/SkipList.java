@@ -1,6 +1,7 @@
-import java.util.Iterator;
 import java.util.Random;
-
+/*
+* Buggy Skip List Implementation*
+*/
 public class SkipList<T> {
     TVar<STMSkipNode<T>> head, tail;
     TVar<Integer> height;

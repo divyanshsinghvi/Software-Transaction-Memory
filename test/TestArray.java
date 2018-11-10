@@ -9,26 +9,19 @@ class TestThread extends Thread {
         this.initializeValue = initializeValue;
 
     }
-    public TestThread (STMArray<Integer> a,int initializeValue,int index) {
+    public TestThread (STMArray<Integer> a) {
         this.a = a;
-        this.initializeValue = initializeValue;
-        this.index = index;
     }
     public void run() {
         boolean condition = false;
         do {
             Transaction tx = new Transaction();
-            if(initializeValue == -1) {
-                Object d = a.getItem(4,tx);
-                myFinalValue = (int)a.getItem(4, tx);
-                if(myFinalValue == -1)
-                    continue;
-                myFinalValue +=1;
-                a.addItem(myFinalValue , 4, tx);
-            }else{
-                a.addItem(initializeValue,index,tx);
-            }
-                condition = tx.commit();
+            myFinalValue = (int)a.getItem(4, tx);
+            if(myFinalValue == -1)
+                continue;
+            myFinalValue +=1;
+            a.addItem(myFinalValue , 4, tx);
+            condition = tx.commit();
         }while(!condition);
         System.out.println(a.array[4].value);
     }
@@ -43,13 +36,16 @@ public class TestArray {
         STMArray<Integer> testArray = new STMArray<>(10);
 
         for(int i=0;i<10;i++) {
-            int z = i;
-            TestThread test = new TestThread(testArray,0,z);
-            test.start();
+            Transaction tx = new Transaction();
+            boolean condition;
+            do {
+                testArray.addItem(0, i, tx);
+                condition = tx.commit();
+            } while (!condition);
         }
 
         for(int i=0;i<200;i++){
-            TestThread temp = new TestThread(testArray, -1);
+            TestThread temp = new TestThread(testArray);
             temp.start();
         }
 

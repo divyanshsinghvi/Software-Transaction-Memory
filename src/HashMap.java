@@ -1,5 +1,7 @@
 import java.util.Map;
-
+    /*
+     * STM hashmap implementation  *
+     */
 public class HashMap<T> {
 
     private java.util.HashMap<String, TVar<T>> hashMap;

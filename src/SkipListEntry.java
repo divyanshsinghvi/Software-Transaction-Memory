@@ -2,9 +2,7 @@ public class SkipListEntry<T>
 {   //This implementation from ~cheung/Courses/
     public String key;
     public T value;
-
     public int pos;      // I added this to print the skiplist "nicely"
-
     public SkipListEntry up, down, left, right;
 
     public static String negInf = new String("-oo");  // -inf key value
@@ -14,7 +12,6 @@ public class SkipListEntry<T>
     {
         key = k;
         value = v;
-
         up = down = left = right = null;
     }
 

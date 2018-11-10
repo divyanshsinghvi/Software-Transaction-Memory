@@ -4,6 +4,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Clock {
+    /*
+    * Global Clock to assign read and write timestamps*
+    */
+
     int count;
     ReadWriteLock lock = new ReentrantReadWriteLock();
     Lock writeLock = lock.writeLock();

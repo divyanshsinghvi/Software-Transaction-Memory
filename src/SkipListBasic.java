@@ -1,14 +1,16 @@
 import java.util.*;
 
+/*Implemntation of cheugn/Courses
+* */
 
 public class SkipListBasic<T>
 {
-    public SkipListEntry<T> head;
-    public SkipListEntry<T> tail;
-    public int noEntry;
-    public int h;
-    public Random r;
-    public SkipListBasic()
+    SkipListEntry<T> head;
+    SkipListEntry<T> tail;
+    int noEntry;
+    int h;
+    Random r;
+    SkipListBasic()
     {
         SkipListEntry p1, p2;
 
@@ -27,26 +29,11 @@ public class SkipListBasic<T>
         r = new Random();
     }
 
-
-    /** Returns the number of entries in the hash table. */
-    public int size()
-    {
-        return noEntry;
-    }
-
-    /** Returns whether or not the table is empty. */
-    public boolean isEmpty()
-    {
-        return (noEntry == 0);
-    }
-
     public boolean isPresent(String k){
         SkipListEntry p = head;
         while ( true )
         {
-            while ( p.right.key != SkipListEntry.posInf &&
-                    p.right.key.compareTo(k) <= 0 )
-            {
+            while ( p.right.key != SkipListEntry.posInf && p.right.key.compareTo(k) <= 0 ) {
                 p = p.right;
             }
 
@@ -61,25 +48,21 @@ public class SkipListBasic<T>
             return true;
         return false;
     }
+
     public SkipListEntry findEntry(String k)
     {
         SkipListEntry p;
-
         p = head;
-
         while ( true )
         {
-            while ( p.right.key != SkipListEntry.posInf &&
-                    p.right.key.compareTo(k) <= 0 )
+            while ( p.right.key != SkipListEntry.posInf && p.right.key.compareTo(k) <= 0 )
             {
                 p = p.right;
-//         System.out.println(">>>> " + p.key);
             }
 
             if ( p.down != null )
             {
                 p = p.down;
-//         System.out.println("vvvv " + p.key);
             }
             else
                 break;
@@ -89,59 +72,16 @@ public class SkipListBasic<T>
     }
 
 
-    /** Returns the value associated with a key. */
     public T get (String k)
     {
         SkipListEntry p;
-
         p = findEntry(k);
-
         if ( k.equals( p.getKey() ) )
             return(T)(p.value);
         else
             return(null);
     }
 
-    /* ------------------------------------------------------------------
-       insertAfterAbove(p, q, y=(k,v) )
-
-          1. create new entry (k,v)
-      2. insert (k,v) AFTER p
-      3. insert (k,v) ABOVE q
-
-               p <--> (k,v) <--> p.right
-                        ^
-                |
-                v
-                q
-
-        Returns the reference of the newly created (k,v) entry
-       ------------------------------------------------------------------ */
-    public SkipListEntry insertAfterAbove(SkipListEntry p, SkipListEntry q,
-                                          String k)
-    {
-        SkipListEntry e;
-
-        e = new SkipListEntry(k, null);
-
-     /* ---------------------------------------
-	Use the links before they are changed !
-	--------------------------------------- */
-        e.left = p;
-        e.right = p.right;
-        e.down = q;
-
-     /* ---------------------------------------
-	Now update the existing links..
-	--------------------------------------- */
-        p.right.left = e;
-        p.right = e;
-        q.up = e;
-
-        return(e);
-    }
-
-    /** Put a key-value pair in the map, replacing previous one if it exists. */
     public synchronized T put (String k, T v)
     {
         SkipListEntry p, q;
@@ -180,12 +120,9 @@ public class SkipListBasic<T>
                 tail = p2;
             }
 
-            while ( p.up == null )
-            {
-//	   System.out.print(".");
+            while ( p.up == null ) {
                 p = p.left;
             }
-//	System.out.print("1 ");
             p = p.up;
             SkipListEntry e;
             e = new SkipListEntry(k, null);
@@ -202,7 +139,6 @@ public class SkipListBasic<T>
         return(null);
     }
 
-    /** Removes the key-value pair with a specified key. */
     public T remove (String key)
     {
         SkipListEntry p = findEntry(key);
