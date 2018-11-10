@@ -15,11 +15,12 @@ class TestThread extends Thread {
         this.index = index;
     }
     public void run() {
-        boolean condition = true;
+        boolean condition = false;
         do {
             Transaction tx = new Transaction();
             if(initializeValue == -1) {
-                myFinalValue = a.getItem(4, tx);
+                Object d = a.getItem(4,tx);
+                myFinalValue = (int)a.getItem(4, tx);
                 if(myFinalValue == -1)
                     continue;
                 myFinalValue +=1;
@@ -45,14 +46,9 @@ public class TestArray {
             int z = i;
             TestThread test = new TestThread(testArray,0,z);
             test.start();
-try{
-    test.join();}
-    catch (Exception e){
-        System.out.println(e);
-    }
         }
 
-        for(int i=0;i<20;i++){
+        for(int i=0;i<200;i++){
             TestThread temp = new TestThread(testArray, -1);
             temp.start();
         }

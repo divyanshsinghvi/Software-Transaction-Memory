@@ -35,7 +35,7 @@ public class FirstSimpleTransaction {
     public static void main(String args[]){
         TVar<Integer> a = new TVar<>();
         a.value=3;
-        int nothread=100;
+        int nothread=107;
         MyThread temp[] = new MyThread[nothread];
         for(int i=0;i<nothread;i++){
             temp[i] = new MyThread(a);

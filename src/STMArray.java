@@ -15,8 +15,8 @@ public class STMArray<T> {
             tx.write(array[k], item);
     }
 
-    public T getItem(int i,Transaction tx){
-        return (T)tx.read(array[i]);
+    public Object getItem(int i,Transaction tx){
+        return tx.read(array[i]);
     }
 
 }
