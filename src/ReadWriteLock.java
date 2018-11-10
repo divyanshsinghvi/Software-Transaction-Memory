@@ -28,32 +28,32 @@ public class ReadWriteLock {
             return 0;
         }
 
-        public boolean isReader(int id){
+        public synchronized boolean isReader(int id){
             if(Readers.contains(id))
                 return true;
             return false;
         }
 
-        public boolean isWriter(int id){
+        public synchronized boolean isWriter(int id){
         if(Writers.contains(id))
             return true;
         return false;
     }
 
         public synchronized void lockRead(int id) throws InterruptedException{
-            lockWrite(id);
-            //            while(writers > 0 || writeRequests > 0){
-//                wait();
-//            }
-//            Readers.add(id);
-//            readers++;
+//            lockWrite(id);
+            while(writers > 0 || writeRequests > 0){
+                wait();
+            }
+            Readers.add(id);
+            readers++;
         }
 
         public synchronized void unlockRead(int id) throws InterruptedException {
-                unlockWrite(id);
-            //            Readers.remove(id);
-//            readers--;
-//            notifyAll();
+//                unlockWrite(id);
+                        Readers.remove(id);
+            readers--;
+            notifyAll();
         }
 
         public synchronized void lockWrite(int id) throws InterruptedException{

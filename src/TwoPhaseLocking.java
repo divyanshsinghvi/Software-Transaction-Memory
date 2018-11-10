@@ -1,3 +1,5 @@
+import com.sun.source.tree.SynchronizedTree;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,6 +23,7 @@ public class TwoPhaseLocking {
     }
 
     public Integer Read(TVar2p x) throws InterruptedException {
+        System.out.println("read by ");
         if (x.lock.mode() == 1 && x.lock.isWriter(myId))
             return x.newVersion;
         if (x.lock.mode() == 2 && x.lock.isReader(myId))
@@ -54,8 +57,8 @@ public class TwoPhaseLocking {
 //– If x is locked by another transaction in any mode, then T aborts, ...
 //            – If x is unlocked, then T sets an exclusive lock on x and writes new version.
 
-    public boolean Write(TVar2p x,int value) throws InterruptedException {
-        System.out.println("I am here");
+    public  boolean  Write(TVar2p x, int value) throws InterruptedException {
+        System.out.println("written by");
         if(x.lock.mode() == 1 && x.lock.isWriter(myId) ){
             x.newVersion = value;
             return true;

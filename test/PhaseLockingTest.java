@@ -14,16 +14,13 @@
                  //tx.Write(a,3);
                  while(!condition){
                  try {
-                     while(temp+1==0) {
-                         temp = tx.Read(a);
+
+                     while(!condition) {
+                         while(temp+1==0) {
+                             temp = tx.Read(a);
+                         }
+                         condition = tx.Write(a, temp + 100);
                      }
-                     //    System.out.println(temp);
-                 } catch (InterruptedException e) {
-                     e.printStackTrace();
-                 }
-                 try {
-                     while(!condition)
-                        condition = tx.Write(a, temp+100);
                  } catch (InterruptedException e) {
                      e.printStackTrace();
                  }
