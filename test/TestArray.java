@@ -20,6 +20,8 @@ class TestThread extends Thread {
             Transaction tx = new Transaction();
             if(initializeValue == -1) {
                 myFinalValue = a.getItem(4, tx);
+                if(myFinalValue == -1)
+                    continue;
                 myFinalValue +=1;
                 a.addItem(myFinalValue , 4, tx);
             }else{
@@ -40,7 +42,8 @@ public class TestArray {
         STMArray<Integer> testArray = new STMArray<>(10);
 
         for(int i=0;i<10;i++) {
-            TestThread test = new TestThread(testArray,0,i);
+            int z = i;
+            TestThread test = new TestThread(testArray,0,z);
             test.start();
 try{
     test.join();}
@@ -52,11 +55,6 @@ try{
         for(int i=0;i<20;i++){
             TestThread temp = new TestThread(testArray, -1);
             temp.start();
-            try{
-                temp.join();}
-            catch (Exception e){
-                System.out.println(e);
-            }
         }
 
 
