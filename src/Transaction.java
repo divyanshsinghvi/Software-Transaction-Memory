@@ -56,7 +56,9 @@ public class Transaction {
             return writeMap.get(x);
         }
         else if(x.lock.intValue() != 0 || x.stamp.intValue() > readStamp ){ //If local copy does not exist check validity
-            Abort();
+            TVar X = new TVar();
+            X.value = Abort();
+            return X;
         }
         else{
             TVar z = new TVar(x);

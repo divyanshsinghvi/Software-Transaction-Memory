@@ -1,55 +1,54 @@
 
-class HashThread extends Thread {
-    HashMap<Integer> a;
-
-    public HashThread (HashMap<Integer> a) {
+class SkipThread extends Thread {
+    STMSkipList<Integer> a;
+    int val;
+    public SkipThread (STMSkipList<Integer> a,int i) {
         this.a = a;
-       // a.printMap();
+        val = i;
+        // a.printMap();
     }
 
     public void run() {
         boolean condition = false;
         do {
             Transaction tx = new Transaction();
+           // String key = "AA"+val;
             int temp = a.getItem("AA", tx);
             if(temp==-1)
                 continue;
-            if(!a.putItem("AA",temp+1,tx))
-                continue;
+            a.putItem("AA",temp+1,tx);
             condition = tx.commit();
         }while(!condition);
-        a.printMap();
     }
 
 }
 
 
-public class HashMapTest {
+public class STMSkipListTest {
 
     public static void main(String args[]) throws InterruptedException {
-        HashMap<Integer> hashMap = new HashMap<>();
+        STMSkipList<Integer> skipList = new STMSkipList<>();
 
         Transaction tx = new Transaction();
-        boolean condition = false;
+        boolean condition;
         do {
-            if(!hashMap.putItem("AA", 3, tx))
-                continue;
+            skipList.putItem("AA", 3, tx);
             condition  = tx.commit();
         }while(!condition);
-        hashMap.printMap();
         System.out.println("--------------");
         //Map Initialized
         int n =500;
-        HashThread[] threads = new HashThread[n];
+        SkipThread[] threads = new SkipThread[n];
         for(int i=0;i<n;i++){
-            threads[i] = new HashThread(hashMap);
+            threads[i] = new SkipThread(skipList,i);
 //           threads[i].sleep(100);
         }
 
         System.out.println("I am here");
-        for(int i=0;i<n;i++)
+        for(int i=0;i<n;i++) {
             threads[i].start();
-
+        }
+        skipList.prinList();
     }
 
 }
