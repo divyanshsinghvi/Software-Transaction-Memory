@@ -57,55 +57,46 @@ public class Transaction {
 //        }
     }
 
-    public boolean commit(){
-        for(Map.Entry<TVar,TVar> entry: writeMap.entrySet())
-        {
-            if(entry.getKey().lock == 0)
-                entry.getKey().lock = transactionId;
-            else
-            {
-                for(Map.Entry<TVar,TVar> entry1: writeMap.entrySet())
-                {
-                    if(entry1.getKey().lock == transactionId)
-                    {
-                        entry1.getKey().lock = 0;
+    public boolean commit( ){
+            for (Map.Entry<TVar, TVar> entry : writeMap.entrySet()) {
+                if (entry.getKey().lock == 0)
+                    entry.getKey().lock = transactionId;
+                else {
+                    for (Map.Entry<TVar, TVar> entry1 : writeMap.entrySet()) {
+                        if (entry1.getKey().lock == transactionId) {
+                            entry1.getKey().lock = 0;
+                        }
                     }
+                    return false;
                 }
-                return false;
             }
-        }
 
-        globalClock.incGlobalCount();
-        writeStamp = globalClock.getGlobalCount();
-        for(Map.Entry<TVar,TVar> entry: readMap.entrySet())
-        {
-            //System.out.println("Lock and transactional Id "+readStamp+" "+entry.getKey().stamp);
+            globalClock.incGlobalCount();
+            writeStamp = globalClock.getGlobalCount();
+            for (Map.Entry<TVar, TVar> entry : readMap.entrySet()) {
+                //System.out.println("Lock and transactional Id "+readStamp+" "+entry.getKey().stamp);
 
-            if(entry.getKey().lock != transactionId || entry.getKey().stamp > readStamp)
-            {
-                for(Map.Entry<TVar,TVar> entry1: writeMap.entrySet())
-                {
-                    if(entry1.getKey().lock == transactionId)
-                    {
-                        entry1.getKey().lock = 0;
+                if (entry.getKey().lock != transactionId || entry.getKey().stamp > readStamp) {
+                    for (Map.Entry<TVar, TVar> entry1 : writeMap.entrySet()) {
+                        if (entry1.getKey().lock == transactionId) {
+                            entry1.getKey().lock = 0;
+                        }
                     }
+                    return false;
+                    //return Abort();
                 }
-                return false;
-                //return Abort();
             }
-        }
-        for(Map.Entry<TVar,TVar> entry: writeMap.entrySet()) {
-            entry.getKey().value = entry.getValue().value;
-        }
+            for (Map.Entry<TVar, TVar> entry : writeMap.entrySet()) {
+                entry.getKey().value = entry.getValue().value;
+            }
 
-        for(Map.Entry<TVar,TVar> entry: writeMap.entrySet())
-        {
-            entry.getKey().stamp = writeStamp;
-             entry.getKey().lock = 0;
-        }
+            for (Map.Entry<TVar, TVar> entry : writeMap.entrySet()) {
+                entry.getKey().stamp = writeStamp;
+                entry.getKey().lock = 0;
+            }
             return true;
+        }
 
-    }
     public boolean Abort(){
         return false;
     }
