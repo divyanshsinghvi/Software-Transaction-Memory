@@ -16,11 +16,16 @@ public class HashMap<T> {
 
     }
 
-    public void  putItem(String key, T value , Transaction tx){
+    public boolean  putItem(String key, T value , Transaction tx){
         TVar<T> item = new TVar<T>();
         item.value = value;
         hashMap.putIfAbsent(key,item);
-        tx.write(hashMap.get(key),item);
+        TVar<T> d = new TVar<>();
+        d = tx.sCopy(hashMap.get(key));
+        if(d.value instanceof  Integer && (Integer) d.value == -1)
+            return false;
+        tx.write(tx.sCopy(hashMap.get(key)),item);
+        return true;
     }
 
     public void printMap(){

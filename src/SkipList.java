@@ -33,12 +33,10 @@ public class SkipList<T> {
 //           Search RIGHT until you find a LARGER entry
             while (((STMSkipNode) tx.read(p.value.right)).getKey(tx) != STMSkipNode.posInf && ((String) ((STMSkipNode) tx.read(p.value.right)).getKey(tx)).compareTo(k) <= 0) {
                 p = tx.sCopy(p.value.right);         // Move to right
-                System.out.println("JAI MATA DI");
             }
 
             if (tx.read(p.value.down) != null) {
                 p = tx.sCopy(p.value.down);          // Go downwards
-                System.out.println("AMBEY MAA");
             } else {
                 break;       // We reached the LOWEST level... Exit...
             }
