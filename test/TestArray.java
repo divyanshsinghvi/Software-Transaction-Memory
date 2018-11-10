@@ -1,31 +1,36 @@
 class TestThread extends Thread {
-    STMArray a;
+    STMArray<Integer> a;
     int initializeValue = 0;
-    int myFinalValue=0;
+    int myFinalValue;
     int index =0;
-    public Object commitBool;
 
-    public TestThread (STMArray a,int initializeValue) {
+    public TestThread (STMArray<Integer> a,int initializeValue) {
         this.a = a;
         this.initializeValue = initializeValue;
 
     }
-    public TestThread (STMArray a,int initializeValue,int index) {
+    public TestThread (STMArray<Integer> a,int initializeValue,int index) {
         this.a = a;
         this.initializeValue = initializeValue;
         this.index = index;
-
     }
-
     public void run() {
-        boolean condition = true;
+        boolean condition = false;
         do {
             Transaction tx = new Transaction();
-            myFinalValue = a.getItem(4, tx);
-            a.addItem(myFinalValue + 1, 4, tx);
-            condition = tx.commit();
+            if(initializeValue == -1) {
+                Object d = a.getItem(4,tx);
+                myFinalValue = (int)a.getItem(4, tx);
+                if(myFinalValue == -1)
+                    continue;
+                myFinalValue +=1;
+                a.addItem(myFinalValue , 4, tx);
+            }else{
+                a.addItem(initializeValue,index,tx);
+            }
+                condition = tx.commit();
         }while(!condition);
-       System.out.println(a.array[4].value);
+        System.out.println(a.array[4].value);
     }
 
 }
@@ -35,19 +40,20 @@ class TestThread extends Thread {
 public class TestArray {
 
     public static void main(String args[]){
-        STMArray testArray = new STMArray(10);
+        STMArray<Integer> testArray = new STMArray<>(10);
 
-
+        for(int i=0;i<10;i++) {
+            int z = i;
+            TestThread test = new TestThread(testArray,0,z);
+            test.start();
+        }
 
         for(int i=0;i<200;i++){
             TestThread temp = new TestThread(testArray, -1);
             temp.start();
         }
 
-//        for(int i=0;i<10;i++){
-//            Transaction tx = new Transaction();
-//            System.out.println(testArray.getItem(i,tx));
-//        }
+
     }
 
 

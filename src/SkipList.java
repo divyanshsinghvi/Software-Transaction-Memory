@@ -31,7 +31,7 @@ public class SkipList<T> {
         TVar<STMSkipNode<T>> p = tx.sCopy(head);
         while (true) {
 //           Search RIGHT until you find a LARGER entry
-            while (((STMSkipNode) tx.read(p.value.right)).key.value != STMSkipNode.posInf && ((String) ((STMSkipNode) tx.read(p.value.right)).key.value).compareTo(k) <= 0) {
+            while (((STMSkipNode) tx.read(p.value.right)).getKey(tx) != STMSkipNode.posInf && ((String) ((STMSkipNode) tx.read(p.value.right)).getKey(tx)).compareTo(k) <= 0) {
                 p = tx.sCopy(p.value.right);         // Move to right
                 System.out.println("JAI MATA DI");
             }
@@ -64,20 +64,38 @@ public class SkipList<T> {
 
         if ( k.equals( p.value.getKey(tx) ) )
         {
-            T old = (T) p.value;
-//            TVar<STMSkipNode> V = new TVar<>();
+            T old = (T) p.value.val;
             TVar<T>Z = new TVar();
             Z.value = v;
-//            V.value.val = Z;
             p.value.val = Z;
             return(old);
         }
 
         q.value = new STMSkipNode(k, v);
-        q.value.left.value = (STMSkipNode<T>) tx.read(p);
-        q.value.right = ((STMSkipNode) tx.read(p)).right;
-        tx.write(((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).left,q);
-        tx.write(((STMSkipNode) tx.read(p)).right,q);
+        q.value.left = tx.sCopy(p);
+        q.value.right = tx.sCopy(((STMSkipNode) tx.read(p)).right);
+        //((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).left = q;
+        //((STMSkipNode) tx.read(p)).right= q;
+        TVar<STMSkipNode<T>> y = new TVar<>();
+        TVar<STMSkipNode<T>> z = new TVar<>();
+
+        y.value = new STMSkipNode<T>(((String) ((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).key.value), ((T) ((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).getValue(tx)));
+        y.value.right = ((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).right;
+        y.value.down = ((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).down;
+        y.value.up = ((STMSkipNode) tx.read(((STMSkipNode) tx.read(p)).right)).up;
+        y.value.left = q;
+        y.stamp = tx.sCopy(((STMSkipNode) tx.sCopy(p).value).right).stamp;
+        y.lock = tx.sCopy(p).lock;
+
+        z.value = new STMSkipNode<T>(((String) ((STMSkipNode) tx.read(p)).key.value), ((T) ((STMSkipNode) tx.read(p)).getValue(tx)));
+        z.value.left = ((STMSkipNode) tx.read(p)).left;
+        z.value.down = ((STMSkipNode) tx.read(p)).down;
+        z.value.up = ((STMSkipNode) tx.read(p)).up;
+        z.value.right = q;
+        z.stamp = tx.sCopy(p).stamp;
+        z.lock = tx.sCopy(p).lock;
+        tx.write((((STMSkipNode) tx.read(p)).right),y);
+        tx.write(p,z);
         i = 0;                   // Current level = 0
         while ( r.nextDouble() < 0.5 )
         {
@@ -98,13 +116,13 @@ public class SkipList<T> {
 
                 TVar<STMSkipNode<T>> z1 = new TVar<>();
                 z1.value = p1;
-                tx.write(head.value.up,z1);
+                head.value.up = z1;
                 TVar<STMSkipNode<T>> z2 = new TVar<>();
                 z2.value = p2;
-                tx.write(tail.value.up, z2);
+                tail.value.up = z2;
 
-                tx.write(head,z1);
-                tx.write(tail,z2);
+                head=z1;
+                tail=z2;
             }
 
 
@@ -140,9 +158,9 @@ public class SkipList<T> {
 
         }
 
-        TVar<Integer>z = new TVar<>(tx.sCopy(nodesNo));
-        z.value = z.value + 1;
-        tx.write(nodesNo ,z);
+        TVar<Integer>kl = new TVar<>(tx.sCopy(nodesNo));
+        kl.value = kl.value + 1;
+        tx.write(nodesNo ,kl);
 
         return(null);   // No old value
     }
