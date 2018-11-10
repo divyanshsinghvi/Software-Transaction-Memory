@@ -2,20 +2,26 @@ class MyThread extends Thread {
     TVar<Integer> a;
     public MyThread (TVar<Integer> a) {
         this.a = a;
+        //System.out.println(a.value);
     }
 
     public void run() {
-        boolean condition=true;
+        boolean condition=false;
         do {
+            condition = false;
             Transaction tx = new Transaction();
             int tem = (int) tx.read(a);
+ //           System.out.println("S"+tem);
+            //System.out.println("GOOGLE");
             if (tem == -1) {
                 continue;
             }
-            int temp = (int)tem + 1;
+            int temp = tem + 1;
             TVar<Integer> z= new TVar<>();
             z.value=temp;
             tx.write(a,z);
+            //System.out.println(a.value);
+            //System.out.println("BOO");
             condition = tx.commit();
         }while (!condition);
         System.out.println(a.value);
@@ -25,17 +31,19 @@ class MyThread extends Thread {
 
 public class FirstSimpleTransaction {
 
-    public void transaction(){
-    }
 
     public static void main(String args[]){
         TVar<Integer> a = new TVar<>();
         a.value=3;
-        for(int i=0;i<200;i++){
-            MyThread temp = new MyThread(a);
-            temp.start();
+        int nothread=100;
+        MyThread temp[] = new MyThread[nothread];
+        for(int i=0;i<nothread;i++){
+            temp[i] = new MyThread(a);
        }
 
-    }
+        for(int i=0;i<nothread;i++) {
+            temp[i].start();
+        }
 }
+    }
 

@@ -1,23 +1,23 @@
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TVar<T> {
     T value;
-    int stamp;
+    AtomicInteger stamp;
     int version;
-    int lock;
+    AtomicInteger lock;
 
     TVar(){
         value = null;
-        stamp = 0;
+        stamp = new AtomicInteger(0);
+        lock = new AtomicInteger(0);
     }
 
     TVar(TVar x){
-        x.lock = 1;
-            this.value = (T) x.value;
-            this.stamp = x.stamp;
-            this.version = x.version;
-            this.lock = x.lock;
-             x.lock = 0;
+            value = (T) x.value;
+            stamp = new AtomicInteger(x.stamp.intValue());
+            version = x.version;
+            lock = new AtomicInteger(0);
     }
 }
