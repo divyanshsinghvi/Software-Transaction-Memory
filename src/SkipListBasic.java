@@ -1,7 +1,8 @@
 import java.util.*;
 
-/*Implemntation of cheugn/Courses
-* */
+/*
+*Implemntation of mathcs.emory.edu/~cheung/Courses/323/
+*/
 
 public class SkipListBasic<T>
 {

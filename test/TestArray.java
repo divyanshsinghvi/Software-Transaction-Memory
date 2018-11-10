@@ -2,7 +2,7 @@ class TestThread extends Thread {
     STMArray<Integer> a;
     int myFinalValue;
 
-    
+
     public TestThread (STMArray<Integer> a) {
         this.a = a;
     }
