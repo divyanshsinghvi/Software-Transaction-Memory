@@ -12,8 +12,8 @@ public class Transaction {
     static AtomicInteger globalClock = new AtomicInteger(2);
     static AtomicInteger globaltid = new AtomicInteger(0);
     Transaction(){
-        readMap = Collections.synchronizedMap(new HashMap<>());
-        writeMap = Collections.synchronizedMap(new HashMap<>());
+        readMap = new HashMap<>();
+        writeMap = new HashMap<>();
         globalLocal = new ConcurrentHashMap<>();
         transactionId = globaltid.incrementAndGet();
         readStamp = globalClock.intValue();
